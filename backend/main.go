@@ -43,6 +43,15 @@ func setValueForKey(w http.ResponseWriter, r *http.Request) {
 	keyvaluepairs[kvp.Key] = kvp.Value
 }
 
+func deleteKey(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("deleteKey called")
+
+	vars := mux.Vars(r)
+	key := vars["key"]
+
+	delete(keyvaluepairs, key)
+}
+
 func main() {
 	fmt.Println("keyvalue backend server")
 
@@ -57,10 +66,13 @@ func main() {
 	router.HandleFunc("/", listKeyValuePairs)
 
 	// get value for given key
-	router.HandleFunc("/kvp/{key}", getValueForKey)
+	router.HandleFunc("/kvp/{key}", getValueForKey).Methods("GET")
 
 	// set key=value
 	router.HandleFunc("/kvp", setValueForKey).Methods("POST")
+
+	// delete key/value pair
+	router.HandleFunc("/kvp/{key}", deleteKey).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
