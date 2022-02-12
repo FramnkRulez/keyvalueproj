@@ -16,9 +16,6 @@ var mapMutex sync.Mutex
 
 func init() {
 	keyvaluepairs = make(map[string]interface{})
-	keyvaluepairs["test"] = "one"
-	keyvaluepairs["test1"] = "two"
-	keyvaluepairs["test2"] = 1
 }
 
 // defines the format used for creating a kvp
@@ -31,6 +28,9 @@ type keyValuePair struct {
 func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("listKeyValuePairs called")
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
 	mapMutex.Lock()
 	defer mapMutex.Unlock()
 	json.NewEncoder(w).Encode(keyvaluepairs)
@@ -40,17 +40,25 @@ func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("getValueForKey called")
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	json.NewEncoder(w).Encode(keyvaluepairs[key])
+	if len(key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		json.NewEncoder(w).Encode(keyvaluepairs[key])
+	}
 }
 
 // sets the specified key/value pair
 func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("setValueForKey called")
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	fmt.Fprintf(w, "%+v", string(reqBody))
@@ -58,19 +66,26 @@ func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	var kvp keyValuePair
 	json.Unmarshal(reqBody, &kvp)
 
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	keyvaluepairs[kvp.Key] = kvp.Value
+	if len(kvp.Key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		keyvaluepairs[kvp.Key] = kvp.Value
+	}
 }
 
 // deletes the key/value pair from our map
 func DeleteKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("deleteKey called")
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	delete(keyvaluepairs, key)
+	if len(key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		delete(keyvaluepairs, key)
+	}
 }

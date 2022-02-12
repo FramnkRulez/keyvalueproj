@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+//import { connect, sendMsg } from "./api";
+import Header from './components/Header/Header';
+import KvpList from "./components/KvpList";
+import Add from "./components/Add";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.update = this.update.bind(this);
+
+    this.state = {
+      keyvaluepairs: []
+    }
+  }
+
+  componentDidMount() {
+    this.update();
+  }
+
+  update() {
+    console.log("updating kvps");
+
+    fetch('http://localhost:8080')
+      .then(res => res.json())
+      .then((data) => {
+        this.setState({ keyvaluepairs: Object.entries(data) })
+      })
+      .catch(console.log)
+  }
+
+  render() {
+    return (
+      <div className="App">        
+        <Header />
+        <KvpList keyvaluepairs={this.state.keyvaluepairs} />
+        <Add addedFunc={this.update}/>
+      </div>
+    );
+  }
 }
 
 export default App;
