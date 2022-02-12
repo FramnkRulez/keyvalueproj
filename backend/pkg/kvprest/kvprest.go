@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/mux"
 )
 
 // define a global in-memory map of key/value pairs we'll use as our data store.
 var keyvaluepairs map[string]interface{}
+var mapMutex sync.Mutex
 
 func init() {
 	keyvaluepairs = make(map[string]interface{})
@@ -28,6 +30,9 @@ type keyValuePair struct {
 // returns a list all key/value pairs stored in our map
 func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("listKeyValuePairs called")
+
+	mapMutex.Lock()
+	defer mapMutex.Unlock()
 	json.NewEncoder(w).Encode(keyvaluepairs)
 }
 
@@ -38,6 +43,8 @@ func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 
+	mapMutex.Lock()
+	defer mapMutex.Unlock()
 	json.NewEncoder(w).Encode(keyvaluepairs[key])
 }
 
@@ -51,6 +58,8 @@ func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	var kvp keyValuePair
 	json.Unmarshal(reqBody, &kvp)
 
+	mapMutex.Lock()
+	defer mapMutex.Unlock()
 	keyvaluepairs[kvp.Key] = kvp.Value
 }
 
@@ -61,5 +70,7 @@ func DeleteKey(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 
+	mapMutex.Lock()
+	defer mapMutex.Unlock()
 	delete(keyvaluepairs, key)
 }
