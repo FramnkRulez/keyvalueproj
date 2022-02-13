@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import Button from 'react-bootstrap/Button';
+
+import "./Add.css";
 
 class Add extends Component {
     constructor(props) {
@@ -40,11 +43,12 @@ class Add extends Component {
     render() {
         return (
             <div>
-                <h3>Add new key/value pair:</h3>
+                <h3>Add new key/value pair</h3>
+
                 Key: <input name="key" value={this.state.key} onChange={this.handleKeyChange}/>
                 Value: <input name="value" value={this.state.value} onChange={this.handleValueChange}/>
 
-                <button onClick={this.handleSubmit}>Add</button>
+                <Button onClick={this.handleSubmit}>Add</Button>
           </div>
         );
       }

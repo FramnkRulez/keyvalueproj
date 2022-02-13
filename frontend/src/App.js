@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 //import { connect, sendMsg } from "./api";
 import Header from './components/Header/Header';
 import KvpList from "./components/KvpList";
