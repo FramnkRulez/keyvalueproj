@@ -68,9 +68,7 @@ func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	if len(key) > 0 {
-		json.NewEncoder(w).Encode(keyvaluestore.GetValueForKey(key))
-	}
+	json.NewEncoder(w).Encode(keyvaluestore.GetValueForKey(key))
 }
 
 // sets the specified key/value pair
@@ -85,9 +83,7 @@ func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	var kvp keyValuePair
 	json.Unmarshal(reqBody, &kvp)
 
-	if len(kvp.Key) > 0 {
-		keyvaluestore.SetValueForKey(kvp.Key, kvp.Value)
-	}
+	keyvaluestore.SetValueForKey(kvp.Key, kvp.Value)
 }
 
 // deletes the key/value pair from our map
@@ -99,7 +95,5 @@ func DeleteKey(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	if len(key) > 0 {
-		keyvaluestore.DeleteKey(key)
-	}
+	keyvaluestore.DeleteKey(key)
 }

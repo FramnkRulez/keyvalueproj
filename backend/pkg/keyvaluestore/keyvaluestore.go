@@ -1,3 +1,4 @@
+// Package keyvaluestore provides an implementation of an in-memory key/value store
 package keyvaluestore
 
 import (
@@ -19,20 +20,27 @@ func GetKeyValuePairs() map[string]interface{} {
 }
 
 func GetValueForKey(key string) interface{} {
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	return keyvaluepairs[key]
+	if len(key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		return keyvaluepairs[key]
+	}
+
+	return nil
 }
 
 func SetValueForKey(key string, value interface{}) {
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-
-	keyvaluepairs[key] = value
+	if len(key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		keyvaluepairs[key] = value
+	}
 }
 
 func DeleteKey(key string) {
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	delete(keyvaluepairs, key)
+	if len(key) > 0 {
+		mapMutex.Lock()
+		defer mapMutex.Unlock()
+		delete(keyvaluepairs, key)
+	}
 }
