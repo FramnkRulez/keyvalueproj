@@ -5,18 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sync"
 
+	"github.com/FramnkRulez/keyvalueproj/pkg/keyvaluestore"
 	"github.com/gorilla/mux"
 )
-
-// define a global in-memory map of key/value pairs we'll use as our data store.
-var keyvaluepairs map[string]interface{}
-var mapMutex sync.Mutex
-
-func init() {
-	keyvaluepairs = make(map[string]interface{})
-}
 
 // defines the format used for creating a kvp
 type keyValuePair struct {
@@ -27,6 +19,25 @@ type keyValuePair struct {
 func addCorsHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "*")
+}
+
+func SetupHandlers(router *mux.Router) {
+	// handle CORS preflight requests
+	router.HandleFunc("/", HandlePreflight).Methods("OPTIONS")
+	router.HandleFunc("/kvp", HandlePreflight).Methods("OPTIONS")
+	router.HandleFunc("/kvp/{key}", HandlePreflight).Methods("OPTIONS")
+
+	// list key/value pairs
+	router.HandleFunc("/", ListKeyValuePairs)
+
+	// get value for given key
+	router.HandleFunc("/kvp/{key}", GetValueForKey).Methods("GET")
+
+	// set key=value
+	router.HandleFunc("/kvp", SetValueForKey).Methods("POST")
+
+	// delete key/value pair
+	router.HandleFunc("/kvp/{key}", DeleteKey).Methods("DELETE")
 }
 
 // this allows our test server to deal with CORS pre-flight request since
@@ -43,9 +54,7 @@ func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 
 	addCorsHeaders(w)
 
-	mapMutex.Lock()
-	defer mapMutex.Unlock()
-	json.NewEncoder(w).Encode(keyvaluepairs)
+	json.NewEncoder(w).Encode(keyvaluestore.GetKeyValuePairs())
 }
 
 // returns the value for the specified key
@@ -58,9 +67,7 @@ func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 	key := vars["key"]
 
 	if len(key) > 0 {
-		mapMutex.Lock()
-		defer mapMutex.Unlock()
-		json.NewEncoder(w).Encode(keyvaluepairs[key])
+		json.NewEncoder(w).Encode(keyvaluestore.GetValueForKey(key))
 	}
 }
 
@@ -77,9 +84,7 @@ func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &kvp)
 
 	if len(kvp.Key) > 0 {
-		mapMutex.Lock()
-		defer mapMutex.Unlock()
-		keyvaluepairs[kvp.Key] = kvp.Value
+		keyvaluestore.SetValueForKey(kvp.Key, kvp.Value)
 	}
 }
 
@@ -93,8 +98,6 @@ func DeleteKey(w http.ResponseWriter, r *http.Request) {
 	key := vars["key"]
 
 	if len(key) > 0 {
-		mapMutex.Lock()
-		defer mapMutex.Unlock()
-		delete(keyvaluepairs, key)
+		keyvaluestore.DeleteKey(key)
 	}
 }
