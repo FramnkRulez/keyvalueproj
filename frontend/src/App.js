@@ -35,7 +35,7 @@ class App extends Component {
     return (
       <div className="App">        
         <Header />
-        <KvpList keyvaluepairs={this.state.keyvaluepairs} />
+        <KvpList keyvaluepairs={this.state.keyvaluepairs} deletedFunc={this.update}/>
         <Add addedFunc={this.update}/>
       </div>
     );

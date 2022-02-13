@@ -24,12 +24,24 @@ type keyValuePair struct {
 	Value interface{} `json:"value"`
 }
 
+func addCorsHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+}
+
+// this allows our test server to deal with CORS pre-flight request since
+// we will be requesting on localhost but a different port from javascript.
+func HandlePreflight(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CORS preflight request")
+
+	addCorsHeaders(w)
+}
+
 // returns a list all key/value pairs stored in our map
 func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("listKeyValuePairs called")
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	addCorsHeaders(w)
 
 	mapMutex.Lock()
 	defer mapMutex.Unlock()
@@ -40,8 +52,7 @@ func ListKeyValuePairs(w http.ResponseWriter, r *http.Request) {
 func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("getValueForKey called")
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	addCorsHeaders(w)
 
 	vars := mux.Vars(r)
 	key := vars["key"]
@@ -57,8 +68,7 @@ func GetValueForKey(w http.ResponseWriter, r *http.Request) {
 func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("setValueForKey called")
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	addCorsHeaders(w)
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	fmt.Fprintf(w, "%+v", string(reqBody))
@@ -77,8 +87,7 @@ func SetValueForKey(w http.ResponseWriter, r *http.Request) {
 func DeleteKey(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("deleteKey called")
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	addCorsHeaders(w)
 
 	vars := mux.Vars(r)
 	key := vars["key"]

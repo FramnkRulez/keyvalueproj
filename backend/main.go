@@ -14,6 +14,11 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 
+	// handle CORS preflight requests
+	router.HandleFunc("/", kvprest.HandlePreflight).Methods("OPTIONS")
+	router.HandleFunc("/kvp", kvprest.HandlePreflight).Methods("OPTIONS")
+	router.HandleFunc("/kvp/{key}", kvprest.HandlePreflight).Methods("OPTIONS")
+
 	// list key/value pairs
 	router.HandleFunc("/", kvprest.ListKeyValuePairs)
 
