@@ -8,6 +8,8 @@ class KvpList extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {errorMessage: ''};
+
         this.handleRemove = this.handleRemove.bind(this);
     }
 
@@ -21,17 +23,21 @@ class KvpList extends Component {
         fetch('http://localhost:8080/kvp/' + key, requestOptions)
             .then(data =>  {
                 this.props.deletedFunc();
+                this.setState({errorMessage: ''});
             })
-            .catch(console.log);
+            .catch(reason => {
+                console.log(reason);
+                this.setState({errorMessage: 'Unable to delete key, verify server is running'});
+            });
     }
 
   render() {
     const kvp = this.props.keyvaluepairs.map((pair, index) => (
-        <tr>
-            <td class="col-1">{index+1}</td>
-            <td class="col-3">{pair[0]}</td>
-            <td class="col-3">{JSON.stringify(pair[1])}</td>
-            <td class="col-1"><Button onClick={() => this.handleRemove(pair[0])}>Delete</Button></td>
+        <tr key={pair[0]}>
+            <td className="col-1">{index+1}</td>
+            <td className="col-3">{pair[0]}</td>
+            <td className="col-3">{JSON.stringify(pair[1])}</td>
+            <td className="col-1"><Button onClick={() => this.handleRemove(pair[0])}>Delete</Button></td>
         </tr>
     ));
 
@@ -53,6 +59,7 @@ class KvpList extends Component {
                 {kvp}
             </tbody>
         </Table>
+        {this.state.errorMessage && <div className="error"> {this.state.errorMessage}</div>}
       </div>
     );
   }

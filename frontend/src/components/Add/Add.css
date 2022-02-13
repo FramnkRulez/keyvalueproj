@@ -2,3 +2,9 @@ input {
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.error {
+    color: red;
+    font-weight: normal;
+    font-size: small;
+  }

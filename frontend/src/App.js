@@ -14,7 +14,8 @@ class App extends Component {
     this.update = this.update.bind(this);
 
     this.state = {
-      keyvaluepairs: []
+      keyvaluepairs: [],
+      errorMessage: ''
     }
   }
 
@@ -28,17 +29,21 @@ class App extends Component {
     fetch('http://localhost:8080')
       .then(res => res.json())
       .then((data) => {
-        this.setState({ keyvaluepairs: Object.entries(data) })
+        this.setState({ keyvaluepairs: Object.entries(data), errorMessage: '' })
       })
-      .catch(console.log)
+      .catch((reason) => {
+        console.log(reason);
+        this.setState({errorMessage: 'Unable to connect to backend server at http://localhost:8080, reload to retry.'});
+      });
   }
 
   render() {
     return (
       <div className="App">        
         <Header />
-        <KvpList keyvaluepairs={this.state.keyvaluepairs} deletedFunc={this.update}/>
-        <Add addedFunc={this.update}/>
+        {this.state.errorMessage && <div className="error"> {this.state.errorMessage}</div>}
+        {!this.state.errorMessage && <KvpList keyvaluepairs={this.state.keyvaluepairs} deletedFunc={this.update}/>}
+        {!this.state.errorMessage && <Add addedFunc={this.update}/>}
       </div>
     );
   }

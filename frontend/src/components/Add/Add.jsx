@@ -6,7 +6,7 @@ import "./Add.css";
 class Add extends Component {
     constructor(props) {
         super(props);
-        this.state = {key: '', value: ''};
+        this.state = {key: '', value: '', errorMessage: ''};
     
         this.handleKeyChange = this.handleKeyChange.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
@@ -26,16 +26,19 @@ class Add extends Component {
 
         const requestOptions = {
             method: 'POST',
-            body: JSON.stringify(this.state)
+            body: JSON.stringify({key: this.state.key, value: this.state.value})
         };
 
         fetch('http://localhost:8080/kvp', requestOptions)
             .then(response => response.json())
             .then(data =>  {
-                this.setState({ key: '', value: '' });
+                this.setState({ key: '', value: '' , errorMessage: ''});
                 this.props.addedFunc();
             })
-            .catch(console.log);
+            .catch(reason => {
+                console.log(reason);
+                this.setState({errorMessage: 'Unable to add key/value, verify server is running'});
+            });
 
         event.preventDefault();
     }
@@ -49,6 +52,7 @@ class Add extends Component {
                 Value: <input name="value" value={this.state.value} onChange={this.handleValueChange}/>
 
                 <Button onClick={this.handleSubmit}>Add</Button>
+                {this.state.errorMessage && <div className="error"> {this.state.errorMessage}</div>}
           </div>
         );
       }
