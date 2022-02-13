@@ -43,7 +43,7 @@ class Add extends Component {
     render() {
         return (
             <div>
-                <h3>Add new key/value pair</h3>
+                <h3>Set key/value pair</h3>
 
                 Key: <input name="key" value={this.state.key} onChange={this.handleKeyChange}/>
                 Value: <input name="value" value={this.state.value} onChange={this.handleValueChange}/>
