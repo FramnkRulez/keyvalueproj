@@ -7,8 +7,12 @@ GET http://localhost:8080/kvp/{key} - retrieve the value for the specified key
 POST http://localhost:8080/kvp - create the key/value in the collection using the specified JSON body
 DELETE http://localhost:8080/kbp/{key} - delete the key/value pair in the collection stored at key
 
-# system requirements
+# System Requirements
 Requires Golang 1.11+ and Node.js 16.14+ to be installed locally on the system
+
+# Installation 
+In the backend folder, run 'go run main.go' and the first time it will download required modules
+In the frontend folder, run 'npm install' to install required node modules.
 
 # Running the backend (Go REST service)
 To run the backend, run 'go run main.go' from the backend folder.  Backend uses port 8080 (this can be modified in main.go, however the frontend assumes port 8080)

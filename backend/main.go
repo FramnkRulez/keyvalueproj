@@ -12,11 +12,12 @@ import (
 )
 
 func main() {
-	fmt.Println("keyvalue backend server")
+	fmt.Println("Starting keyvalue backend server...")
 
 	router := mux.NewRouter().StrictSlash(true)
 
 	kvprest.SetupHandlers(router)
 
+	fmt.Println("keyvalue backend server started, listening for requests.")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
