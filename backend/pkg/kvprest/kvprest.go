@@ -1,3 +1,5 @@
+// Package kvprest provides an implementation of a REST interface for listing,
+// adding, getting and deleting key/value pairs from a key/value store.
 package kvprest
 
 import (

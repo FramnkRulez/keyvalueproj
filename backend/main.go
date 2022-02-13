@@ -1,3 +1,5 @@
+// Main go module responsible for starting up the HTTP listener and router and calling the
+// kvprest go package for handling incoming requests.
 package main
 
 import (
