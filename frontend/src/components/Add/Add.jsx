@@ -24,21 +24,25 @@ class Add extends Component {
     handleSubmit(event) {
         console.log(this.state);
 
-        const requestOptions = {
-            method: 'POST',
-            body: JSON.stringify({key: this.state.key, value: this.state.value})
-        };
+        if(this.state.key.includes('/')) {
+            this.setState({errorMessage: "Invalid character '/' found in key"});
+        } else {
+            const requestOptions = {
+                method: 'POST',
+                body: JSON.stringify({key: this.state.key, value: this.state.value})
+            };
 
-        fetch('http://localhost:8080/kvp', requestOptions)
-            .then(response => response.json())
-            .then(data =>  {
-                this.setState({ key: '', value: '' , errorMessage: ''});
-                this.props.addedFunc();
-            })
-            .catch(reason => {
-                console.log(reason);
-                this.setState({errorMessage: 'Unable to add key/value, verify server is running'});
-            });
+            fetch('http://localhost:8080/kvp', requestOptions)
+                .then(response => response.json())
+                .then(data =>  {
+                    this.setState({ key: '', value: '' , errorMessage: ''});
+                    this.props.addedFunc();
+                })
+                .catch(reason => {
+                    console.log(reason);
+                    this.setState({errorMessage: 'Unable to add key/value, verify server is running'});
+                });
+            }
 
         event.preventDefault();
     }

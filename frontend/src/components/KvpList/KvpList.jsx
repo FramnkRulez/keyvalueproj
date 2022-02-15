@@ -20,7 +20,7 @@ class KvpList extends Component {
             method: 'DELETE'
         };
 
-        fetch('http://localhost:8080/kvp/' + key, requestOptions)
+        fetch('http://localhost:8080/kvp/' + encodeURIComponent(key), requestOptions)
             .then(data =>  {
                 this.props.deletedFunc();
                 this.setState({errorMessage: ''});
